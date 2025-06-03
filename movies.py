@@ -3,6 +3,10 @@ from random import randint
 __version__ = "1.2"
 
 import matplotlib.pyplot as plt
+
+MOVIE_DOESNT_EXIST_MSG = "This movie doesn't exist!"
+RATING_IS_NOT_NUMERIC = "Rating is not a number!"
+
 def error(msg: str) -> None:
     """ prints a text in ✨fancy red✨ """
     print(f"\033[0;31m{msg}\033[0m")
@@ -33,7 +37,7 @@ class MovieRank:
         title =  get_user_input_colorized("Movie title: ")
         rating = convert_to_float(get_user_input_colorized("Movie rating: "))
         if not rating: 
-            error("Rating is not a number!")
+            error(RATING_IS_NOT_NUMERIC)
             return
         if title not in self.movies:
             self.movies[title] = rating
@@ -45,23 +49,32 @@ class MovieRank:
         if title in self.movies:
             self.movies.pop(title)
         else:
-            error("This movie doesn't exist!")
+            error(MOVIE_DOESNT_EXIST_MSG)
+    def edit_movie(self):
+        """
+        Get user input & use it to edit a movie in ``self.movies``
+        """
+        title =  get_user_input_colorized("Movie title: ")
+        rating = get_user_input_colorized("Movie rating: ")
+        if not rating: 
+            error(RATING_IS_NOT_NUMERIC)
+            return
+        
+        if title in self.movies:
+            self.movies[title] = rating
+        else:
+            error(MOVIE_DOESNT_EXIST_MSG)
+            
+            
+    def plot_movies(self):
+        plt.hist([self.movies[i] for i in self.movies])
+        plt.show()
     def update(self,inp):
         match inp:
             case "1": self.list_movies()
             case "2": self.add_movie()
             case "3": self.remove_movie()
-            case "4":#$edit movie
-                title =  get_user_input_colorized("Movie title: ")
-                rating = get_user_input_colorized("Movie rating: ")
-                if not rating: 
-                    print("\033[0;31mRating is not a number!\033[0m")
-                    return
-                
-                if title in self.movies:
-                    self.movies[title] = rating
-                else:
-                    print("\033[0;31mThis movie doesn't exist\033[0m")
+            case "4": self.edit_movie()
             case "5":
                 ratings = [self.movies[i] for i in self.movies]
                 median = ratings.copy()
@@ -107,9 +120,7 @@ class MovieRank:
                 ratings.reverse()
                 for n, r in zip(names,ratings):
                     print(f"{r}: {n}/10")
-            case "9":
-                plt.hist([self.movies[i] for i in self.movies])
-                plt.show()
+            case "9": self.plot_movies()
             case _:
                 print("\033[0;31mInvalid Input!\033[0m")
                 
