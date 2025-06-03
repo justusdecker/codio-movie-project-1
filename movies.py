@@ -7,10 +7,11 @@ import matplotlib.pyplot as plt
 MSG_MOVIE_DOESNT_EXIST = "This movie doesn't exist!"
 MSG_RATING_IS_NOT_NUMERIC = "Rating is not a number!"
 MSG_INVALID_INPUT = "Invalid Input!"
+MSG_NO_RESULTS = 'No Results!'
+MSG_WRONG_RATING = "Enter a rating in range: 0 - 10"
 
 def compare_two_strings(a: str, b: str) -> int:
-    """ check for each char in a -> in b """
-    return any([char in b for char in a])
+    return any([b.count(char) >= a.count(char) and char in b for char in a])
 
 def error(msg: str) -> None:
     """ prints a text in ✨fancy red✨ """
@@ -65,6 +66,9 @@ class MovieRank:
         if not rating: 
             error(MSG_RATING_IS_NOT_NUMERIC)
             return
+        if rating > 10:
+            error(MSG_WRONG_RATING)
+            return
         if title not in self.movies:
             self.movies[title] = rating
             
@@ -93,7 +97,9 @@ class MovieRank:
         if not rating: 
             error(MSG_RATING_IS_NOT_NUMERIC)
             return
-        
+        if rating > 10:
+            error(MSG_WRONG_RATING)
+            return
         if title in self.movies:
             self.movies[title] = rating
         else:
@@ -135,7 +141,19 @@ class MovieRank:
         listed = sorted(listed,key=lambda x: x[1],reverse=True)
         for n, r in listed:
             print(f"{n:<35} {r}/10")
-    
+    def print_search(self):
+        value = get_user_input_colorized("Search: ").lower()
+        normal_movies = list(self.movies)
+        low_movies = [m.lower() for m in normal_movies]
+        results = 0
+        if value in low_movies:
+            #normal_movies[low_movies.index(value)]
+            results += 1
+            print(normal_movies[low_movies.index(value)])
+        if not results:
+            for movie in self.movies:
+                if compare_two_strings(value, movie):
+                    print(movie)
     def plot_movies(self):
         plt.hist([self.movies[i] for i in self.movies])
         plt.show()
@@ -148,16 +166,7 @@ class MovieRank:
             case "4": self.edit_movie()
             case "5": self.print_stats()
             case "6": self.print_random_movie()
-            case "7":#$Search
-                value = get_user_input_colorized("Search: ").lower()
-                if value in self.movies:
-                    print(self.movies[value])
-                else:
-                    for movie in self.movies:
-                        if fuzz.ratio(value,movie.lower()) > 85:
-                            print(f"Did you mean {movie}?")
-                    else:
-                        print("\033[0;31mNo Results!\033[0m")
+            case "7": self.print_search()
             case "8": self.print_movies_by_rank()
             case "9": self.plot_movies()
             case _: error(MSG_INVALID_INPUT)         
