@@ -131,18 +131,24 @@ class MovieRank:
             median = round((median[median_hlen] +_median_1) / 2,2)
             print(median)
         average = sum(ratings) / len(ratings)
-        worst, ratingW = "",11
-        best, ratingB = "",-1
+        worst, ratingW = [],11
+        best, ratingB = [],-1
         
         for key in self.movies:
             if self.movies[key] > ratingB:
-                best = key
+                best.append(key)
                 ratingB = self.movies[key]
             if self.movies[key] < ratingW:
-                worst = key
+                worst.append(key)
                 ratingW = self.movies[key]
         
-        print(f"Average rating: {round(average,2)}. Median rating: {median}. Worst Rating: {worst} with {ratingW}/10. Best Rating: {best} with {ratingB}/10")
+        print(f"Average rating: {round(average,2)}. Median rating: {median}.\n{"-"*15}")
+        print(f'Best Rating{"s" if len(best) > 1 else ""}\n{"-"*15}')
+        for b in best:
+            print(f"Rating: {b} with {ratingB}/10")
+        print(f'Worst Rating{"s" if len(worst) > 1 else ""}\n{"-"*15}')
+        for w in worst:
+            print(f"Rating: {w} with {ratingW}/10. ")
         
     def print_random_movie(self):
         """ 
