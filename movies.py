@@ -58,7 +58,7 @@ class MovieRank:
         """
         title =  get_user_input_colorized("Movie title: ")
         
-        if title in self.movies:
+        if title not in self.movies:
             error(MSG_MOVIE_DOESNT_EXIST)
             return
         
