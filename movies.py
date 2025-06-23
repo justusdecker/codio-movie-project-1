@@ -6,6 +6,7 @@ from bin.constants import *
 from bin.modules import *
 
 class MovieRank:
+    max_rating: int = 10.
     def __init__(self):
         self.movies = {
         "The Shawshank Redemption": 9.5,
@@ -97,12 +98,12 @@ class MovieRank:
             error(MSG_MOVIE_DOESNT_EXIST)
             return
         
-        rating = get_user_input_colorized("Movie rating: ")
+        rating = convert_to_float(get_user_input_colorized("Movie rating: "))
         
         if not rating: 
             error(MSG_RATING_IS_NOT_NUMERIC)
             return
-        if rating > 10:
+        if rating > self.max_rating:
             error(MSG_WRONG_RATING)
             return
         if title in self.movies:
@@ -131,24 +132,24 @@ class MovieRank:
             median = round((median[median_hlen] +_median_1) / 2,2)
             print(median)
         average = sum(ratings) / len(ratings)
-        worst, ratingW = [],11
-        best, ratingB = [],-1
-        
+        worst, rating_w = [],11
+        best, rating_b = [],-1
+        ma, mi = max([self.movies[i] for i in self.movies]) , min([self.movies[i] for i in self.movies])
         for key in self.movies:
-            if self.movies[key] > ratingB:
+            if self.movies[key] == ma:
                 best.append(key)
-                ratingB = self.movies[key]
-            if self.movies[key] < ratingW:
+                rating_b = self.movies[key]
+            if self.movies[key] == mi:
                 worst.append(key)
-                ratingW = self.movies[key]
-        
+                rating_w = self.movies[key]
+        pass
         print(f"Average rating: {round(average,2)}. Median rating: {median}.\n{"-"*15}")
         print(f'Best Rating{"s" if len(best) > 1 else ""}\n{"-"*15}')
         for b in best:
-            print(f"Rating: {b} with {ratingB}/10")
+            print(f"Rating: {b} with {rating_b}/10")
         print(f'Worst Rating{"s" if len(worst) > 1 else ""}\n{"-"*15}')
         for w in worst:
-            print(f"Rating: {w} with {ratingW}/10. ")
+            print(f"Rating: {w} with {rating_w}/10. ")
         
     def print_random_movie(self):
         """ 
@@ -173,28 +174,17 @@ class MovieRank:
             print(f"{n:<35} {r}/10")
     def print_search(self):
         """
-        Prompts the user for a search query and prints matching movie titles.
+        Searches for and prints movie titles that contain a user-provided string (case-insensitive).
 
-        This method first asks the user for a search string using `get_user_input_colorized`.
-        It then attempts to find an exact, case-insensitive match within the movie titles.
-        If an exact match is found, it's printed.
-
-        If no exact match is found, the method iterates through all movie titles
-        and prints any movie whose title has a significant similarity to the search query,
-        as determined by the `compare_two_strings` function.
+        The search is performed against the keys (movie titles) in the `self.movies` dictionary.
+        The user is prompted to enter a search term, and any movie title containing
+        this term (regardless of case) will be printed to the console.
         """
         value = get_user_input_colorized("Search: ").lower()
-        normal_movies = list(self.movies)
-        low_movies = [m.lower() for m in normal_movies]
-        results = 0
-        if value in low_movies:
-            #normal_movies[low_movies.index(value)]
-            results += 1
-            print(normal_movies[low_movies.index(value)])
-        if not results:
-            for movie in self.movies:
-                if compare_two_strings(value, movie):
-                    print(movie)
+        for key in self.movies:
+            if value.lower() in key.lower():
+                print(key)
+
     def plot_movies(self):
         """ Generates and displays a histogram of movie ratings. """
         plt.hist([self.movies[i] for i in self.movies])
