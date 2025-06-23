@@ -1,5 +1,3 @@
-def compare_two_strings(a: str, b: str) -> int:
-    return any([b.count(char) >= a.count(char) and char in b for char in a])
 
 def error(msg: str) -> None:
     """ prints a text in ✨fancy red✨ """
