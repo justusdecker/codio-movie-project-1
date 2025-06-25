@@ -130,7 +130,6 @@ class MovieRank:
             _median_1 = median[median_hlen]
             median.sort(reverse=True)
             median = round((median[median_hlen] +_median_1) / 2,2)
-            print(median)
         average = sum(ratings) / len(ratings)
         worst, rating_w = [],11
         best, rating_b = [],-1
@@ -143,11 +142,16 @@ class MovieRank:
                 worst.append(key)
                 rating_w = self.movies[key]
         pass
-        print(f"Average rating: {round(average,2)}. Median rating: {median}.\n{"-"*15}")
-        print(f'Best Rating{"s" if len(best) > 1 else ""}\n{"-"*15}')
+        print(f"Average rating: {round(average,2)}. Median rating: {median}.\n")
+        print("-"*15) # fix for: SyntaxError: f-string: expecting '}' I don't know why this is happening in codio!
+        tmp = "s" if len(best) > 1 else ""
+        print(f'Best Rating{tmp}\n')
+        print("-"*15) # fix for: SyntaxError: f-string: expecting '}'
         for b in best:
             print(f"Rating: {b} with {rating_b}/10")
-        print(f'Worst Rating{"s" if len(worst) > 1 else ""}\n{"-"*15}')
+        tmp = "s" if len(worst) > 1 else ""
+        print(f'Worst Rating{tmp}\n')
+        print("-"*15) # fix for: SyntaxError: f-string: expecting '}'
         for w in worst:
             print(f"Rating: {w} with {rating_w}/10. ")
         
@@ -183,7 +187,7 @@ class MovieRank:
         value = get_user_input_colorized("Search: ").lower()
         for key in self.movies:
             if value.lower() in key.lower():
-                print(key)
+                print(key, self.movies[key])
 
     def plot_movies(self):
         """ Generates and displays a histogram of movie ratings. """
